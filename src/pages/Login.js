@@ -1,52 +1,34 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import Loading from '../components/Loading';
 import { createUser } from '../services/userAPI';
 
-class Login extends Component {
-  constructor() {
-    super();
-    this.state = {
-      name: '',
-      btnDisabled: true,
-      loading: false,
-      userCreated: false,
-    };
-  }
+function Login() {
+  const [name, setName] = useState('');
+  const [btnDisabled, setBtnDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [userCreated, setUserCreated] = useState(false);
 
-  handleInput = (event) => {
+  const handleInput = (event) => {
     const nome = event.target.value;
     const min = 3;
 
     if (nome.length >= min) {
-      this.setState({
-        name: nome,
-        btnDisabled: false,
-      });
+      setBtnDisabled(false)
+    } else {
+      setBtnDisabled(true)
     }
-
-    if (nome.length < min) {
-      this.setState({
-        name: nome,
-        btnDisabled: true,
-      });
-    }
+    setName(nome)
   };
 
-  CreatingUser = async () => {
-    const { name } = this.state;
-    this.setState({ loading: true });
+  const CreatingUser = async () => {
+    setLoading(true);
     await createUser({ name });
-    this.setState({
-      userCreated: true,
-    });
+    setUserCreated(true);
   };
 
-  render() {
-    const { name, btnDisabled, loading, userCreated } = this.state;
     return (
-      <>
-        { userCreated && <Redirect to="/search" /> }
+      userCreated === true ? <Redirect to="/search" /> :
         <div data-testid="page-login" id="login">
           {loading ? <Loading />
             : (
@@ -67,7 +49,7 @@ class Login extends Component {
                       type="text"
                       id="name"
                       data-testid="login-name-input"
-                      onChange={ this.handleInput }
+                      onChange={ handleInput }
                       value={ name }
                       placeholder="Insira seu nome"
                       autoComplete="off"
@@ -77,7 +59,7 @@ class Login extends Component {
                     type="submit"
                     disabled={ btnDisabled }
                     data-testid="login-submit-button"
-                    onClick={ this.CreatingUser }
+                    onClick={ CreatingUser }
                   >
                     Entrar
 
@@ -90,9 +72,7 @@ class Login extends Component {
               </>
             )}
         </div>
-      </>
     );
-  }
 }
 
 export default Login;

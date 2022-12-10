@@ -1,63 +1,55 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaHeartBroken } from 'react-icons/fa';
 import Header from '../components/Header';
 import Loading from '../components/Loading';
 import MusicCard from '../components/MusicCard';
 import { getFavoriteSongs } from '../services/favoriteSongsAPI';
 
-class Favorites extends Component {
-  constructor() {
-    super();
-    this.state = {
-      loading: false,
-      elements: [],
-    };
-  }
+function Favorites() {
+  const [loading, setLoading] = useState(false)
+  const [elements, setElements] = useState([])
 
-  async componentDidMount() {
-    await this.consolando();
-  }
+  useEffect(() => {
+    const gettingFavoriteSongs = async () => {
+      setElements(await getFavoriteSongs())
+      setLoading(false);
+    }
+    gettingFavoriteSongs()
+  })
 
-  consolando = async () => {
-    this.setState({ elements: await getFavoriteSongs(), loading: false });
-  };
-
-  rendering = () => {
+  const rendering = () => {
     this.setState({ loading: true }, this.consolando);
   };
 
-  render() {
-    const { elements, loading } = this.state;
-    return (
-      <>
-        <Header />
-        <div data-testid="page-favorites" id="favorites">
-          <div className="banner" />
-          { loading ? <Loading /> : (
-            <>
-              {' '}
-              {
-                elements.length === 0 ? (
-                  <p id="favEmpty">
-                    Você ainda não favoritou nada
+  return (
+    <>
+      <Header />
+      <div data-testid="page-favorites" id="favorites">
+        <div className="banner" />
+        { loading ? <Loading /> : (
+          <>
+            {' '}
+            {
+              elements.length === 0 ? (
+                <p id="favEmpty">
+                  Você ainda não favoritou nada
+                  {' '}
+                  <FaHeartBroken color="red" />
+                </p>)
+                : elements.map((element) => (
+                  <li key={ element.trackId }>
                     {' '}
-                    <FaHeartBroken color="red" />
-                  </p>)
-                  : elements.map((element) => (
-                    <li key={ element.trackId }>
-                      {' '}
-                      <MusicCard track={ element } att={ this.rendering } />
-                      {' '}
-                    </li>))
-              }
-              {' '}
+                    <MusicCard track={ element } att={ rendering } />
+                    {' '}
+                  </li>))
+            }
+            {' '}
 
-            </>
-          )}
-        </div>
-      </>
-    );
-  }
+          </>
+        )}
+      </div>
+    </>
+  );
 }
 
 export default Favorites;

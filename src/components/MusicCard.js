@@ -1,91 +1,66 @@
 import PropTypes from 'prop-types';
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { addSong, getFavoriteSongs, removeSong } from '../services/favoriteSongsAPI';
-import Loading from './Loading';
+import loadingGif from '../images/loadingGif.gif';
 
-class MusicCard extends Component {
-  constructor() {
-    super();
-    this.state = {
-      loading: false,
-      save: false,
-    };
-  }
+function MusicCard({ track, att }) {
+  const [loading, setLoading] = useState(false);
+  const [save, setSave] = useState(false);
 
-  async componentDidMount() {
-    await this.getFavorite();
-  }
-
-  async componentDidUpdate() {
-    await this.getFavorite();
-  }
-
-  getFavorite = async () => {
-    const { track } = this.props;
+  const getFavorite = async () => {
     const favorites = await getFavoriteSongs();
     const wasFavorite = favorites.find((music) => (
       music.trackId === track.trackId));
-    if (wasFavorite) {
-      this.setState(
-        {
-          save: wasFavorite,
-        },
-      );
-    }
+    if (wasFavorite) setSave(wasFavorite)
   };
 
-  handleSave = async ({ target }) => {
-    const { track, att } = this.props;
-    this.setState({
-      loading: true,
-    });
+  useEffect(() => {
+    getFavorite()
+  }, [])
+
+  useEffect(() => {
+    getFavorite();
+  }, [save])
+
+  const handleSave = async ({ target }) => {
+    setLoading(true);
     if (target.checked) {
       await addSong(track);
-      this.setState({
-        save: true,
-      });
+      setSave(true)
     } else {
       await removeSong(track);
-      this.setState({
-        save: false,
-      });
+      setSave(false)
     }
-    this.setState({
-      loading: false,
-    });
+    setLoading(false);
     att();
   };
 
-  render() {
-    const { track } = this.props;
-    const { loading, save } = this.state;
-    return (
-      !loading
-        ? (
-          <>
-            <div className="musica">
-              <p>{track.trackName}</p>
-              <audio data-testid="audio-component" src={ track.previewUrl } controls>
-                <track kind="captions" />
-                O seu navegador não suporta o elemento
-                {' '}
-                {' '}
-              </audio>
-              <label htmlFor={ track.trackId }> Favorita </label>
-              <input
-                type="checkbox"
-                id={ track.trackId }
-                data-testid={ `checkbox-music-${track.trackId}` }
-                onChange={ this.handleSave }
-                checked={ save }
-              />
-            </div>
-            <hr />
-            {' '}
+  return (
+    !loading
+      ? (
+        <>
+          <div className="musica">
+            <p>{track.trackName}</p>
+            <audio data-testid="audio-component" src={ track.previewUrl } controls>
+              <track kind="captions" />
+              O seu navegador não suporta o elemento
+              {' '}
+              {' '}
+            </audio>
+            <label htmlFor={ track.trackId }> Favorita </label>
+            <input
+              type="checkbox"
+              id={ track.trackId }
+              data-testid={ `checkbox-music-${track.trackId}` }
+              onChange={ handleSave }
+              checked={ save }
+            />
+          </div>
+          <hr />
+          {' '}
 
-          </>) : <Loading />
-    );
-  }
+        </>) : <img src={ loadingGif } alt='Loading...'/>
+  );
 }
 
 MusicCard.defaultProps = {

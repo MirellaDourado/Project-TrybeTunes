@@ -7,21 +7,22 @@ import NotFound from './pages/NotFound';
 import Profile from './pages/Profile';
 import ProfileEdit from './pages/ProfileEdit';
 import Search from './pages/Search';
+import TrybeTunesProvider from './context/TrybeTunesProvider';
 
-class App extends React.Component {
-  render() {
-    return (
+function App () {
+  return (
+    <TrybeTunesProvider>
       <Switch>
-        <Route exact path="/" component={ Login } />
-        <Route exact path="/search" component={ Search } />
-        <Route exact path="/album/:id" component={ Album } />
-        <Route exact path="/favorites" component={ Favorites } />
-        <Route exact path="/profile/" component={ Profile } />
-        <Route exact path="/profile/edit" component={ ProfileEdit } />
-        <Route path="*" component={ NotFound } />
+        <Route exact path="/" render={ () => <Login /> } />
+        <Route exact path="/search" render={ () => <Search /> } />
+        <Route exact path="/album/:id" render={ (props) => <Album {...props} /> } />
+        <Route exact path="/favorites" render={ () => <Favorites /> } />
+        <Route exact path="/profile/" render={ () => <Profile /> } />
+        <Route exact path="/profile/edit" render={ () => <ProfileEdit /> } />
+        <Route path="*" render={ () => <NotFound /> } />
       </Switch>
-    );
-  }
+    </TrybeTunesProvider>
+  );
 }
 
 export default App;

@@ -1,17 +1,15 @@
-import React, { Component } from 'react';
-import loading from '../images/loading.gif';
+import React from 'react';
+import loadingGif from '../images/loadingGif.gif';
 
-class Loading extends Component {
-  render() {
-    return (
-      <div className="loading">
-        <p>
-          Carregando...
-        </p>
-        <img src={ loading } alt="Barra de carregamento" />
-      </div>
-    );
-  }
+function Loading() {
+  return (
+    <div className="loading">
+      <p>
+        Carregando...
+      </p>
+      <img src={ loadingGif } alt="Barra de carregamento" />
+    </div>
+  );
 }
 
 export default Loading;
